@@ -7,8 +7,6 @@ public class Bus extends Car {
         super(isClean, length, height, width);
     }
 
-
-
     @Override
     public String toString() {
         return "Bus{" +

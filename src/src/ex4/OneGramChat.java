@@ -1,31 +1,28 @@
 package src.ex4;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OneGramChat {
     private User user;
-
-    public static ArrayList<User> users = new ArrayList<>();
+    private static User[] usersArr = new User[100];
     Scanner scanner = new Scanner(new InputStreamReader(System.in));
 
     //создать пользователя
     public void makeUser() throws ErrorUser{
         String name = inputLoginAndPassword("Введите имя пользователя: ");
         String password = inputLoginAndPassword("Введите пароль: ");
-        user = new User(name, password, new ArrayList<>(100));
-        users.add(user);
+        user = new User(name, password, new Message[100]);
+        addArrUsers(user, usersArr);
     }
-
 
     //Войти пользователю
     public User inputUser() throws ErrorUser {
         String name = inputLoginAndPassword("Введите имя пользователя: ");
         String password = inputLoginAndPassword("Введите пароль: ");
-        if (users != null) {
-            for (User user : users) {
-                if ((user.getName().equals(name)) && (user.getPassword().equals(password))) {
+        if (usersArr != null) {
+            for (User user : usersArr) {
+                if (user != null && (user.getName().equals(name)) && (user.getPassword().equals(password))) {
                     System.out.println("Поздравляю Вы успешно зашли в чат!!!");
                     return user;
                 }
@@ -34,11 +31,7 @@ public class OneGramChat {
         throw new ErrorUser("Ошибка: такого пользователя не существует");
     }
 
-    //Написать письмо: Вводится имя пользователя, вводится текст письма.
-    //У текущего пользователя записывается в список сообщений как исходящий
-    //У пользователя которому пишем, записывается в список сообщений как входящее
-    //если такого пользователя нет, то возникает ошибка: такого пользователя нет
-    //если текущего пользователя нет, то возникает ошибка: вы не авторизованы
+    //Написать письмо
     public void setMessage(User nowUser) throws ErrorUser {
 
         if (nowUser == null) {
@@ -51,9 +44,11 @@ public class OneGramChat {
 
         //проверяем есть ли такой пользователь
         User userOut = null;
-        for (User user : users) {
-            if (user.getName().equals(nameOut)) {
+        for (User user : usersArr) {
+
+            if (user != null && user.getName().equals(nameOut)) {
                 userOut = user;
+                break;
             }
         }
         if (userOut == null) {
@@ -63,48 +58,36 @@ public class OneGramChat {
         System.out.print("Текст: ");
         String text = inputString();
 
-        Message newMessageForUserOut = new Message(text, true, nowUser.getName());
         Message newMessageForUserIn = new Message(text, false, userOut.getName());
+        nowUser.setMessagesArr(addArrMess(newMessageForUserIn, nowUser.getMessagesArr()));
 
-        ArrayList<Message> messagesIn = nowUser.getMessages();
-        messagesIn.add(newMessageForUserIn);
-        nowUser.setMessages(messagesIn);
-
-        ArrayList<Message> messagesOut = userOut.getMessages();
-        messagesOut.add(newMessageForUserOut);
-        userOut.setMessages(messagesOut);
-
+        Message newMessageForUserOut = new Message(text, true, nowUser.getName());
+        userOut.setMessagesArr(addArrMess(newMessageForUserOut, userOut.getMessagesArr()));
     }
 
     //Прочитать письма:
-    //Вывести все письма текущего пользователя.
-    //Формат входящего: "письмо от {имя пользователя}: {текст сообщения}"
-    //Формат исходящего: "письмо к {имя пользователя}: {текст сообщения}"
-    //если текущего пользователя нет, то возникает ошибка: вы не авторизованы
     public String readMessage(User nowUser) throws ErrorUser {
         if (nowUser == null) {
             throw new ErrorUser("Ошибка: вы не авторизованы");
         }
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < nowUser.getMessages().size(); i++) {
-            if (nowUser.getMessages().get(i) != null) {
+        for (int i = 0; i < nowUser.getMessagesArr().length; i++) {
+            if (nowUser.getMessagesArr()[i] != null) {
 
-                if (nowUser.getMessages().get(i).isInOutMessage()) {
+                if (nowUser.getMessagesArr()[i].isInOutMessage()) {
                     stringBuilder.append("письмо от ");
-                    stringBuilder.append(nowUser.getMessages().get(i).getNameUser());
+                    stringBuilder.append(nowUser.getMessagesArr()[i].getNameUser());
                     stringBuilder.append(": ");
-                    stringBuilder.append(nowUser.getMessages().get(i).getText());
+                    stringBuilder.append(nowUser.getMessagesArr()[i].getText());
                     stringBuilder.append("\n");
-                } else if (!nowUser.getMessages().get(i).isInOutMessage()){
+                } else if (!nowUser.getMessagesArr()[i].isInOutMessage()){
                     stringBuilder.append("письмо к ");
-                    stringBuilder.append(nowUser.getMessages().get(i).getNameUser());
+                    stringBuilder.append(nowUser.getMessagesArr()[i].getNameUser());
                     stringBuilder.append(": ");
-                    stringBuilder.append(nowUser.getMessages().get(i).getText());
+                    stringBuilder.append(nowUser.getMessagesArr()[i].getText());
                     stringBuilder.append("\n");
                 }
-
             }
-
         }
         return stringBuilder.toString();
     }
@@ -133,4 +116,22 @@ public class OneGramChat {
         throw new ErrorUser("Ошибка");
     }
 
+    public void addArrUsers(User user, User[] users) {
+        for (int i = 0; i < users.length; i++) {
+            if (users[i] == null) {
+                users[i] = user;
+                break;
+            }
+        }
+    }
+
+    public Message[] addArrMess(Message message, Message[] messages) {
+        for (int i = 0; i < messages.length; i++) {
+            if (messages[i] == null) {
+                messages[i] = message;
+                break;
+            }
+        }
+        return messages;
+    }
 }

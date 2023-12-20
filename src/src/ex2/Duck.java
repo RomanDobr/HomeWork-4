@@ -13,5 +13,6 @@ public class Duck implements Flyable {
             throw new FlyException("Ошибка: утка ранена");
         }
         System.out.println("Утка летит");
+
     }
 }

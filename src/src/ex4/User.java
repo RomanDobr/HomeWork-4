@@ -1,17 +1,15 @@
 package src.ex4;
 
-import java.util.ArrayList;
-
 public class User {
     private String name;
     private String password;
 
-    private ArrayList<Message> messages = new ArrayList<>(100);
+    private Message[] messagesArr;
 
-    public User(String name, String password, ArrayList<Message> messages) {
+    public User(String name, String password, Message[] messagesArr) {
         this.name = name;
         this.password = password;
-        this.messages = messages;
+        this.messagesArr = messagesArr;
     }
 
     public String getName() {
@@ -22,12 +20,11 @@ public class User {
         return password;
     }
 
-    public ArrayList<Message> getMessages() {
-        return messages;
+    public Message[] getMessagesArr() {
+        return messagesArr;
     }
 
-    public void setMessages(ArrayList<Message> messages) {
-        this.messages = messages;
+    public void setMessagesArr(Message[] messagesArr) {
+        this.messagesArr = messagesArr;
     }
-
 }

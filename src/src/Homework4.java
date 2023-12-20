@@ -8,7 +8,6 @@ import src.ex2.Duck;
 import src.ex2.FlyException;
 import src.ex2.Flyable;
 import src.ex3.*;
-import src.ex4.Runner;
 
 public class Homework4 {
     public static void main(String[] args) {
